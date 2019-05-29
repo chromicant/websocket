@@ -6,7 +6,8 @@ import (
 	"testing"
 
 	"github.com/LinearZoetrope/testevents"
-	"github.com/gopherjs/websocket/websocketjs"
+	"github.com/chromicant/websocket/websocketjs"
+	"github.com/chromicant/websocket"
 )
 
 func TestWSInvalidURL(t_ *testing.T) {
@@ -33,11 +34,11 @@ func TestWSImmediateClose(t_ *testing.T) {
 	var wg sync.WaitGroup
 
 	var (
-		openCallback  js.Callback
-		closeCallback js.Callback
+		openCallback  js.Func
+		closeCallback js.Func
 	)
 
-	openCallback = js.NewEventCallback(0, func(ev js.Value) {
+	openCallback = websocket.NewEventCallback(0, func(ev js.Value) {
 		defer ws.RemoveEventListener("open", openCallback)
 
 		t.Logf("WebSocket opened")
@@ -45,7 +46,7 @@ func TestWSImmediateClose(t_ *testing.T) {
 	defer openCallback.Release()
 	ws.AddEventListener("open", openCallback)
 
-	closeCallback = js.NewEventCallback(0, func(ev js.Value) {
+	closeCallback = websocket.NewEventCallback(0, func(ev js.Value) {
 		defer wg.Done()
 		defer ws.RemoveEventListener("close", closeCallback)
 

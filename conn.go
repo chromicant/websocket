@@ -13,8 +13,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gopherjs/gopherwasm/js"
-	"github.com/gopherjs/websocket/websocketjs"
+	"syscall/js"
+	"github.com/chromicant/websocket/websocketjs"
 )
 
 func beginHandlerOpen(ch chan error, removeHandlers func()) func(ev js.Value) {
@@ -75,8 +75,8 @@ func Dial(url string) (net.Conn, error) {
 	openCh := make(chan error, 1)
 
 	var (
-		openHandler  js.Callback
-		closeHandler js.Callback
+		openHandler  js.Func
+		closeHandler js.Func
 	)
 
 	// Handlers need to be removed to prevent a panic when the WebSocket closes
@@ -91,8 +91,8 @@ func Dial(url string) (net.Conn, error) {
 
 	// We have to use variables for the functions so that we can remove the
 	// event handlers afterwards.
-	openHandler = js.NewEventCallback(0, beginHandlerOpen(openCh, removeHandlers))
-	closeHandler = js.NewEventCallback(0, beginHandlerClose(openCh, removeHandlers))
+	openHandler = NewEventCallback(0, beginHandlerOpen(openCh, removeHandlers))
+	closeHandler = NewEventCallback(0, beginHandlerClose(openCh, removeHandlers))
 
 	ws.AddEventListener("open", openHandler)
 	ws.AddEventListener("close", closeHandler)
@@ -115,8 +115,8 @@ type conn struct {
 	readCh  <-chan *messageEvent
 	readBuf *bytes.Reader
 
-	onMessageCallback js.Callback
-	onCloseCallback   js.Callback
+	onMessageCallback js.Func
+	onCloseCallback   js.Func
 
 	readDeadline time.Time
 }
@@ -165,8 +165,8 @@ func (c *conn) initialize() {
 	// that it can easily be read.
 	c.Set("binaryType", "arraybuffer")
 
-	c.onMessageCallback = js.NewEventCallback(0, c.onMessage)
-	c.onCloseCallback = js.NewEventCallback(0, c.onClose)
+	c.onMessageCallback = NewEventCallback(0, c.onMessage)
+	c.onCloseCallback = NewEventCallback(0, c.onClose)
 
 	c.AddEventListener("message", c.onMessageCallback)
 	c.AddEventListener("close", c.onCloseCallback)

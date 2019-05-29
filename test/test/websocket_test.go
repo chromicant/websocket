@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/LinearZoetrope/testevents"
-	"github.com/gopherjs/websocket"
+	"github.com/chromicant/websocket"
 )
 
 func TestConnImmediateClose(t_ *testing.T) {

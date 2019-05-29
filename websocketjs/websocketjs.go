@@ -30,7 +30,7 @@ such as adding event listeners with callbacks.
 */
 package websocketjs
 
-import "github.com/gopherjs/gopherwasm/js"
+import "syscall/js"
 
 // ReadyState represents the state that a WebSocket is in. For more information
 // about the available states, see
@@ -100,12 +100,12 @@ type WebSocket struct {
 // AddEventListener provides the ability to bind callback
 // functions to the following available events:
 // open, error, close, message
-func (ws *WebSocket) AddEventListener(typ string, callback js.Callback) {
+func (ws *WebSocket) AddEventListener(typ string, callback js.Func) {
 	ws.Call("addEventListener", typ, callback)
 }
 
 // RemoveEventListener removes a previously bound callback function
-func (ws *WebSocket) RemoveEventListener(typ string, callback js.Callback) {
+func (ws *WebSocket) RemoveEventListener(typ string, callback js.Func) {
 	ws.Call("removeEventListener", typ, callback)
 }
 
